@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tax Optimisation — KoinX</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080e1a;
+  --surface:#0f1623;
+  --surface2:#141c2e;
+  --surface3:#1b2540;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.04);
+  --text:#dce8f7;
+  --text2:#8fa8c4;
+  --muted:#4e6580;
+  --accent:#1d6feb;
+  --accent2:#2f7fff;
+  --green:#22c55e;
+  --red:#f05252;
+  --blue-card-from:#1255b5;
+  --blue-card-to:#0a3880;
+  --r:12px;
+  --rs:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+
+/* ── HEADER ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:500}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-0.3px}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#1d6feb,#7c3aed);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.nav{display:flex;gap:2px}
+.nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:5px 13px;border-radius:6px;transition:all .15s}
+.nav a:hover{color:var(--text);background:var(--surface2)}
+.nav a.active{color:#60a5fa;background:rgba(59,130,246,.1)}
+
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+
+/* ── PAGE TITLE ── */
+.page-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;position:relative}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.4px}
+.how-link{color:#60a5fa;font-size:13px;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:3px;position:relative}
+.how-tip{
+  display:none;
+  position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);
+  background:#fff;color:#111;border-radius:10px;padding:14px 16px;
+  font-size:13px;line-height:1.6;width:310px;
+  box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:9999;
+  font-weight:400;
+}
+.how-tip li{list-style:none;margin-bottom:6px;padding-left:14px;position:relative}
+.how-tip li::before{content:"•";position:absolute;left:0;color:#1d6feb}
+.how-tip .pro-tip{margin-top:10px;font-weight:600;color:#111}
+.how-link:hover .how-tip{display:block}
+.how-tip::before{content:'';position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-bottom-color:#fff}
+
+/* ── DISCLAIMER BANNER ── */
+.disclaimer{
+  background:rgba(16,40,100,.55);border:1px solid rgba(59,130,246,.25);
+  border-radius:var(--rs);margin-bottom:22px;overflow:hidden;
+}
+.disclaimer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;cursor:pointer;gap:10px;user-select:none;
+}
+.disclaimer-head span{font-size:13px;font-weight:600;color:#93c5fd;display:flex;align-items:center;gap:8px}
+.disclaimer-head .chevron{font-size:14px;color:#93c5fd;transition:transform .2s}
+.disclaimer-head.open .chevron{transform:rotate(180deg)}
+.disclaimer-body{
+  padding:0 16px;max-height:0;overflow:hidden;transition:max-height .28s ease,padding .28s ease;
+}
+.disclaimer-body.open{max-height:300px;padding:4px 16px 14px}
+.disclaimer-body ul{list-style:none}
+.disclaimer-body ul li{font-size:12.5px;color:#93c5fd;line-height:1.6;padding:4px 0 4px 14px;position:relative}
+.disclaimer-body ul li::before{content:"•";position:absolute;left:0}
+.disclaimer-body ul li strong{color:#bfdbfe}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+
+/* ── GAIN CARD ── */
+.gain-card{border-radius:var(--r);padding:20px 22px 18px;transition:transform .2s,box-shadow .2s}
+.gain-card.dark{background:var(--surface);border:1px solid var(--border)}
+.gain-card.blue{background:linear-gradient(145deg,var(--blue-card-from) 0%,var(--blue-card-to) 100%);border:1px solid rgba(255,255,255,.1)}
+.gc-title{font-size:15px;font-weight:700;margin-bottom:17px}
+
+.gc-table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.gc-table th{font-size:11px;font-weight:600;color:var(--muted);text-align:right;padding:0 0 8px;border-bottom:1px solid var(--border)}
+.gain-card.blue .gc-table th{color:rgba(255,255,255,.55);border-bottom-color:rgba(255,255,255,.12)}
+.gc-table th:first-child{text-align:left}
+.gc-table td{font-size:13px;padding:6px 0;text-align:right;font-family:'JetBrains Mono',monospace;font-weight:500}
+.gc-table td:first-child{text-align:left;font-family:'DM Sans',sans-serif;color:var(--text2);font-weight:400;font-size:13px}
+.gain-card.blue .gc-table td:first-child{color:rgba(255,255,255,.85)}
+.gc-table td.pos{color:var(--green)}
+.gc-table td.neg{color:var(--red)}
+.gc-table td.neu{color:var(--text2)}
+.gain-card.blue .gc-table td{color:#e0efff}
+.gain-card.blue .gc-table td.pos{color:#86efac}
+.gain-card.blue .gc-table td.neg{color:#fca5a5}
+.gc-sep td{border-top:1px solid var(--border);padding-top:9px;font-weight:700!important}
+.gain-card.blue .gc-sep td{border-top-color:rgba(255,255,255,.12)}
+
+.realised-row{display:flex;justify-content:space-between;align-items:center;padding-top:13px;border-top:1px solid var(--border)}
+.gain-card.blue .realised-row{border-top-color:rgba(255,255,255,.15)}
+.realised-label{font-size:13px;font-weight:600}
+.gain-card.blue .realised-label{color:#fff;font-size:14px;font-weight:700}
+.realised-value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px}
+.realised-value.pos{color:var(--green)}
+.realised-value.neg{color:var(--red)}
+.gain-card.blue .realised-value{color:#fff}
+.gain-card.blue .realised-value.neg{color:#fca5a5}
+
+.savings-tag{
+  margin-top:11px;background:rgba(255,255,255,.12);border-radius:6px;
+  padding:7px 11px;font-size:12.5px;color:rgba(255,255,255,.92);
+  display:flex;align-items:center;gap:7px;animation:fadeUp .25s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TOOLTIP ── */
+.tip{position:relative;display:inline-block;cursor:default}
+.tip .tip-box{
+  visibility:hidden;opacity:0;pointer-events:none;
+  background:#fff;color:#111827;border-radius:7px;padding:4px 10px;
+  font-size:11.5px;font-family:'JetBrains Mono',monospace;font-weight:600;
+  white-space:nowrap;position:absolute;bottom:calc(100% + 7px);left:50%;
+  transform:translateX(-50%) translateY(4px);
+  transition:opacity .15s ease,transform .15s ease,visibility 0s linear .15s;
+  z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.tip .tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}
+.tip:hover .tip-box{visibility:visible;opacity:1;transform:translateX(-50%) translateY(0);transition:opacity .15s ease,transform .15s ease}
+
+/* ── HOLDINGS ── */
+.holdings-section{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.holdings-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;border-bottom:1px solid var(--border)}
+.holdings-title{font-size:16px;font-weight:700}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--surface2)}
+th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);white-space:nowrap}
+th:first-child{padding-left:20px}
+th.r{text-align:right}
+.th-sort{cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.th-sort:after{content:'▲';font-size:8px;opacity:.5}
+
+tbody tr{border-bottom:1px solid var(--border2);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:rgba(255,255,255,.022)}
+tbody tr.row-sel{background:rgba(29,111,235,.07)}
+tbody tr:last-child{border-bottom:none}
+td{padding:12px 14px;vertical-align:middle}
+td:first-child{padding-left:20px}
+td.r{text-align:right}
+
+/* CHECKBOX */
+.cb{width:16px;height:16px;border-radius:4px;border:2px solid rgba(255,255,255,.2);background:transparent;appearance:none;-webkit-appearance:none;cursor:pointer;position:relative;transition:all .15s;flex-shrink:0}
+.cb:hover{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(47,127,255,.15)}
+.cb:checked{background:var(--accent2);border-color:var(--accent2)}
+.cb:checked::after{content:'✓';position:absolute;top:-2px;left:1px;font-size:11px;color:#fff;font-weight:700}
+
+/* ASSET CELL */
+.asset-cell{display:flex;align-items:center;gap:10px}
+.asset-logo{width:32px;height:32px;border-radius:50%;background:var(--surface2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.asset-logo img{width:100%;height:100%;object-fit:cover}
+.asset-logo-fb{font-size:10px;font-weight:700;color:var(--muted)}
+.asset-name{font-weight:600;font-size:13px}
+.asset-tick{font-size:11px;color:var(--muted);margin-top:1px}
+
+.mono{font-family:'JetBrains Mono',monospace}
+.num-main{font-weight:600;font-size:12.5px}
+.num-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.col-pos{color:var(--green)}
+.col-neg{color:var(--red)}
+
+.sell-badge{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;color:#60a5fa;background:rgba(59,130,246,.1);border-radius:5px;padding:3px 9px;display:inline-block}
+.sell-dash{color:var(--muted);font-size:16px}
+
+/* SKELETON */
+.sk{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;display:inline-block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+@media(max-width:760px){
+  .cards-grid{grid-template-columns:1fr}
+  .nav{display:none}
+  .header{padding:0 16px}
+  .main{padding:20px 14px 60px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><div class="logo-icon">₿</div>KoinX</div>
+  <nav class="nav">
+    <a href="#">Dashboard</a>
+    <a href="#" class="active">Tax Harvesting</a>
+    <a href="#">Portfolio</a>
+    <a href="#">Reports</a>
+  </nav>
+</header>
+
+<main class="main">
+  <div class="page-row">
+    <h1 class="page-title">Tax Optimisation</h1>
+    <span class="how-link">How it works?
+      <div class="how-tip">
+        <li>See your capital gains for FY 2024-25 in the left card</li>
+        <li>Check boxes for assets you plan on selling to reduce your tax liability</li>
+        <li>Instantly see your updated tax liability in the right card</li>
+        <p class="pro-tip">Pro tip: <span style="font-weight:400">Experiment with different combinations of your holdings to optimize your tax liability</span></p>
+      </div>
+    </span>
+  </div>
+
+  <div class="disclaimer" id="disclaimer">
+    <div class="disclaimer-head open" onclick="toggleDisclaimer()">
+      <span>ℹ️ Important Notes And Disclaimers</span>
+      <span class="chevron">▲</span>
+    </div>
+    <div class="disclaimer-body open" id="disc-body">
+      <ul>
+        <li><strong>Price Source Disclaimer:</strong> Please note that the current price of your coins may differ from the prices listed on specific exchanges. This is because we use CoinGecko as our default price source for certain exchanges, rather than fetching prices directly from the exchange.</li>
+        <li><strong>Country-specific Availability:</strong> Tax loss harvesting may not be supported in all countries. We strongly recommend consulting with your local tax advisor or accountant before performing any related actions on your exchange.</li>
+        <li><strong>Utilization of Losses:</strong> Tax loss harvesting typically allows you to offset capital gains. However, if you have zero or no applicable crypto capital gains, the usability of these harvested losses may be limited. Kindly confirm with your tax advisor how such losses can be applied in your situation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Pre Harvesting -->
+    <div class="gain-card dark">
+      <div class="gc-title">Pre Harvesting</div>
+      <table class="gc-table">
+        <thead><tr><th></th><th>Short-term</th><th>Long-term</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Profits</td>
+            <td class="pos">$4,049.48</td>
+            <td class="neu">$0.00</td>
+          </tr>
+          <tr>
+            <td>Losses</td>
+            <td class="neg">$32,127.03</td>
+            <td class="neu">$0.00</td>
+          </tr>
+          <tr class="gc-sep">
+            <td>Net Capital Gains</td>
+            <td class="neg">-$28,077.55</td>
+            <td class="neu">$0.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="realised-row">
+        <span class="realised-label">Realised Capital Gains:</span>
+        <span class="realised-value neg">-$28,077.55</span>
+      </div>
+    </div>
+
+    <!-- After Harvesting -->
+    <div class="gain-card blue">
+      <div class="gc-title">After Harvesting</div>
+      <table class="gc-table">
+        <thead><tr><th></th><th>Short-term</th><th>Long-term</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Profits</td>
+            <td id="ah-profits-st" class="pos">$4,049.48</td>
+            <td class="neu">$0.00</td>
+          </tr>
+          <tr>
+            <td>Losses</td>
+            <td id="ah-losses-st" class="neg">$32,127.03</td>
+            <td class="neu">$0.00</td>
+          </tr>
+          <tr class="gc-sep">
+            <td>Net Capital Gains</td>
+            <td id="ah-net-st" class="neg">-$28,077.55</td>
+            <td class="neu">$0.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="realised-row">
+        <span class="realised-label">Effective Capital Gains:</span>
+        <span id="ah-effective" class="realised-value neg">-$28,077.55</span>
+      </div>
+      <div id="savings-tag" style="display:none" class="savings-tag">
+        <span>💰</span>
+        <span>Your taxable capital gains are reduced by: <strong id="savings-amt"></strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Holdings Table -->
+  <div class="holdings-section">
+    <div class="holdings-header">
+      <div class="holdings-title">Holdings</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="cb" id="cb-all" onchange="toggleAll(this)"/></th>
+            <th>Asset</th>
+            <th>Holdings<br><span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;font-size:10px">Avg Buy Price</span></th>
+            <th>Current Price</th>
+            <th class="r"><span class="th-sort">Short-Term</span></th>
+            <th class="r">Long-Term</th>
+            <th>Amount to Sell</th>
+          </tr>
+        </thead>
+        <tbody id="holdings-body"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+const HOLDINGS = [
+  { coin:"WBTC", name:"Wrapped Bitc...", fullName:"Wrapped Bitcoin", logo:"https://coin-images.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png", price:104385.53, holding:2218.81, avgBuy:92980.19, stGain:25310000,  ltGain:0 },
+  { coin:"BTC",  name:"Bitcoin",        fullName:"Bitcoin",          logo:"https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png",                 price:104250.00, holding:1184.12, avgBuy:93072.64, stGain:13240000,  ltGain:0 },
+  { coin:"ETH",  name:"Ethereum",       fullName:"Ethereum",         logo:"https://coin-images.coingecko.com/coins/images/279/large/ethereum.png",              price:2531.06,   holding:20028.05,avgBuy:3367.78,  stGain:-16760000, ltGain:0 },
+  { coin:"SOL",  name:"Solana",         fullName:"Solana",           logo:"https://coin-images.coingecko.com/coins/images/4128/large/solana.png",               price:174.37,    holding:20277.78,avgBuy:192.15,   stGain:-360410,   ltGain:0 },
+  { coin:"BNB",  name:"BNB",            fullName:"BNB",              logo:"https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png",          price:665.55,    holding:7020.16, avgBuy:708.72,   stGain:-303050,   ltGain:0 },
+  { coin:"AAVE", name:"Aave",           fullName:"Aave",             logo:"https://coin-images.coingecko.com/coins/images/12645/large/AAVE.png",                price:224.33,    holding:2615.93, avgBuy:291.54,   stGain:-254220,   ltGain:0 },
+  { coin:"MATIC",name:"Polygon",        fullName:"Polygon",          logo:"https://coin-images.coingecko.com/coins/images/4713/large/polygon.png",              price:0.26,      holding:26038.45,avgBuy:0.14,     stGain:3348.92,   ltGain:0 },
+  { coin:"MKR",  name:"Maker",          fullName:"Maker",            logo:"https://coin-images.coingecko.com/coins/images/1364/large/Mark_Maker.png",           price:1866.63,   holding:5.94,    avgBuy:1502.10,  stGain:2167.04,   ltGain:0 },
+  { coin:"LINK", name:"Chainlink",      fullName:"Chainlink",        logo:"https://coin-images.coingecko.com/coins/images/877/large/chainlink-new-logo.png",    price:14.50,     holding:12000,   avgBuy:18.20,    stGain:-44400,    ltGain:0 },
+  { coin:"UNI",  name:"Uniswap",        fullName:"Uniswap",          logo:"https://coin-images.coingecko.com/coins/images/12504/large/uni.jpg",                 price:6.80,      holding:8500,    avgBuy:9.10,     stGain:-19550,    ltGain:0 },
+];
+
+const PRE = { profits: 4049.48, losses: 32127.03 };
+const selected = new Set();
+
+function fmtPrice(n){
+  if(Math.abs(n)>=1000) return '$'+(n/1000).toFixed(2)+'K';
+  return '$'+n.toFixed(2);
+}
+function fmtGain(n){
+  const abs=Math.abs(n), sign=n<0?'-':'+';
+  if(abs>=1e9) return sign+'$'+(abs/1e9).toFixed(2)+'B';
+  if(abs>=1e6) return sign+'$'+(abs/1e6).toFixed(2)+'M';
+  if(abs>=1e3) return sign+'$'+(abs/1e3).toFixed(2)+'K';
+  return sign+'$'+abs.toFixed(2);
+}
+function fmtCompact(n){
+  const abs=Math.abs(n);
+  if(abs>=1e9) return '$'+(n/1e9).toFixed(2)+'B';
+  if(abs>=1e6) return '$'+(n/1e6).toFixed(2)+'M';
+  if(abs>=1e3) return '$'+(n/1e3).toFixed(2)+'K';
+  return '$'+n.toFixed(2);
+}
+function fmtNum(n){return new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
+function fmtHolding(n){return new Intl.NumberFormat('en-US',{maximumFractionDigits:4}).format(n)}
+
+function renderRows(){
+  const tbody = document.getElementById('holdings-body');
+  tbody.innerHTML = '';
+  HOLDINGS.forEach((h,i) => {
+    const sel = selected.has(i);
+    const tr = document.createElement('tr');
+    if(sel) tr.classList.add('row-sel');
+    tr.onclick = () => toggleRow(i);
+    tr.innerHTML = `
+      <td><input type="checkbox" class="cb" ${sel?'checked':''} onchange="toggleRow(${i})" onclick="event.stopPropagation()"/></td>
+      <td>
+        <div class="asset-cell">
+          <div class="asset-logo"><img src="${h.logo}" onerror="this.parentNode.innerHTML='<span class=asset-logo-fb>${h.coin.slice(0,3)}</span>'" alt="${h.coin}"/></div>
+          <div>
+            <div class="asset-name">${h.fullName}</div>
+            <div class="asset-tick">${h.coin}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="mono num-main">${fmtHolding(h.holding)} ${h.coin}</div>
+        <div class="num-sub mono">$${fmtNum(h.avgBuy)}/${h.coin}</div>
+      </td>
+      <td>
+        <div class="tip">
+          <span class="mono num-main">${fmtPrice(h.price)}</span>
+          <span class="tip-box">$${fmtNum(h.price)}</span>
+        </div>
+      </td>
+      <td class="r">
+        <div class="tip">
+          <div class="mono num-main ${h.stGain>=0?'col-pos':'col-neg'}">${fmtGain(h.stGain)}</div>
+          <div class="num-sub mono">${fmtHolding(h.holding)} ${h.coin}</div>
+          <span class="tip-box">${h.stGain>=0?'+':'-'}$${fmtNum(Math.abs(h.stGain))}</span>
+        </div>
+      </td>
+      <td class="r">
+        <div class="mono num-main ${h.ltGain>=0?'col-pos':'col-neg'}">$0.00</div>
+        <div class="num-sub mono">0 ${h.coin}</div>
+      </td>
+      <td>${sel ? `<span class="sell-badge">${fmtHolding(h.holding)} ${h.coin}</span>` : '<span class="sell-dash">—</span>'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateHeaderCb();
+  updateAfterHarvesting();
+}
+
+function toggleRow(i){
+  selected.has(i) ? selected.delete(i) : selected.add(i);
+  renderRows();
+}
+
+function toggleAll(cb){
+  if(cb.checked) HOLDINGS.forEach((_,i) => selected.add(i));
+  else selected.clear();
+  renderRows();
+}
+
+function updateHeaderCb(){
+  const cb = document.getElementById('cb-all');
+  if(selected.size === HOLDINGS.length){ cb.checked=true; cb.indeterminate=false; }
+  else if(selected.size === 0){ cb.checked=false; cb.indeterminate=false; }
+  else{ cb.checked=false; cb.indeterminate=true; }
+}
+
+function updateAfterHarvesting(){
+  let addLoss=0, addProfit=0;
+  for(const i of selected){
+    const h=HOLDINGS[i];
+    if(h.stGain<0) addLoss += Math.abs(h.stGain);
+    else addProfit += h.stGain;
+  }
+  const newProfits = PRE.profits + addProfit;
+  const newLosses  = PRE.losses  + addLoss;
+  const newNet     = newProfits  - newLosses;
+
+  document.getElementById('ah-profits-st').textContent = fmtCompact(newProfits);
+  document.getElementById('ah-losses-st').textContent  = fmtCompact(newLosses);
+
+  const netEl = document.getElementById('ah-net-st');
+  netEl.textContent = (newNet<0?'-':'+')+fmtCompact(Math.abs(newNet)).replace(/^\+/,'');
+  netEl.className   = newNet<0 ? 'neg' : 'pos';
+
+  const effEl = document.getElementById('ah-effective');
+  effEl.textContent = (newNet<0?'-$':'+$')+fmtNum(Math.abs(newNet));
+  effEl.className   = 'realised-value '+(newNet<0?'neg':'pos');
+
+  const reduction = (PRE.profits-PRE.losses) - newNet;
+  const saveTag = document.getElementById('savings-tag');
+  if(reduction > 0.01){
+    saveTag.style.display='flex';
+    document.getElementById('savings-amt').textContent = fmtCompact(reduction);
+  } else {
+    saveTag.style.display='none';
+  }
+}
+
+function toggleDisclaimer(){
+  const head = document.querySelector('.disclaimer-head');
+  const body = document.getElementById('disc-body');
+  head.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+renderRows();
+</script>
+</body>
+</html>
