@@ -59,3 +59,4 @@ No country-specific tax rules applied
 Abhishek Verma
 B.Tech CSE (AI)
 Noida Institute of Engineering and Technology
+<img width="1710" height="1112" alt="Screenshot 2026-04-16 at 6 11 00 PM" src="https://github.com/user-attachments/assets/085ed53c-5ae1-4148-bcfa-74146b468128" />
